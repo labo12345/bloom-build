@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, Instagram, Facebook, Linkedin } from "lucide-react";
+import { Phone, Mail, MapPin, Instagram } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Footer = () => {
   return (
@@ -11,11 +12,14 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="space-y-4">
-            <div>
-              <h3 className="font-display text-2xl font-semibold">Beyond House</h3>
-              <p className="text-sm text-background/60 tracking-widest uppercase">
-                Interior Consultancy
-              </p>
+            <div className="flex items-center gap-3">
+              <img src={logo} alt="Beyond House Logo" className="h-12 w-auto" />
+              <div>
+                <h3 className="font-display text-xl font-semibold">Beyond House</h3>
+                <p className="text-sm text-background/60 tracking-widest uppercase">
+                  Interior Design
+                </p>
+              </div>
             </div>
             <p className="text-background/80 text-sm leading-relaxed">
               Transforming your space beyond imagination with premium interior construction 
