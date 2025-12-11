@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar, MessageSquare, Palette, Hammer, CheckCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const steps = [
   {
@@ -46,20 +47,26 @@ const Consultancy = () => {
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Consultation Request Received!",
-      description: "We'll contact you within 24 hours to confirm your appointment.",
-    });
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      preferredDate: "",
-      projectType: "",
-      message: "",
-    });
+    try {
+      const { error } = await supabase.from("consultation_requests").insert({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        preferred_date: formData.preferredDate,
+        project_type: formData.projectType,
+        message: formData.message || null,
+      });
+      if (error) throw error;
+      toast({
+        title: "Consultation Request Received!",
+        description: "We'll contact you within 24 hours to confirm your appointment.",
+      });
+      setFormData({ name: "", email: "", phone: "", preferredDate: "", projectType: "", message: "" });
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to submit. Please try again.", variant: "destructive" });
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
