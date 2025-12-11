@@ -1,8 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -16,6 +17,11 @@ const navigation = [
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, isAdmin, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/50">
@@ -51,8 +57,28 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden lg:flex lg:items-center lg:gap-4">
+          {/* CTA & Auth Buttons */}
+          <div className="hidden lg:flex lg:items-center lg:gap-3">
+            {user ? (
+              <>
+                {isAdmin && (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/admin">Admin Dashboard</Link>
+                  </Button>
+                )}
+                <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4 mr-1" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/auth">
+                  <User className="h-4 w-4 mr-1" />
+                  Sign In
+                </Link>
+              </Button>
+            )}
             <Button variant="gold" size="lg" asChild>
               <Link to="/contact">
                 <Phone className="h-4 w-4" />
@@ -97,6 +123,26 @@ const Navbar = () => {
               <Button variant="gold" size="lg" asChild className="mt-4">
                 <Link to="/contact">Get a Quote</Link>
               </Button>
+              {user ? (
+                <>
+                  {isAdmin && (
+                    <Button variant="outline" size="lg" asChild className="w-full">
+                      <Link to="/admin">Admin Dashboard</Link>
+                    </Button>
+                  )}
+                  <Button variant="ghost" size="lg" onClick={handleSignOut} className="w-full">
+                    <LogOut className="h-4 w-4 mr-1" />
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <Button variant="outline" size="lg" asChild className="w-full">
+                  <Link to="/auth">
+                    <User className="h-4 w-4 mr-1" />
+                    Sign In
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         )}
