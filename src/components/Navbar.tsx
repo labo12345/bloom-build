@@ -4,6 +4,7 @@ import { Menu, X, Phone, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import logo from "@/assets/logo.png";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -28,13 +29,14 @@ const Navbar = () => {
       <nav className="container mx-auto px-4 lg:px-8">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-3">
+            <img src={logo} alt="Beyond House Logo" className="h-12 w-auto" />
             <div className="flex flex-col">
-              <span className="font-display text-2xl font-semibold text-foreground tracking-tight">
+              <span className="font-display text-xl font-semibold text-foreground tracking-tight">
                 Beyond House
               </span>
               <span className="text-xs text-muted-foreground tracking-widest uppercase">
-                Interior Consultancy
+                Interior Design
               </span>
             </div>
           </Link>

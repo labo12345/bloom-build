@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, X, Image, Star } from "lucide-react";
+import { Plus, Edit, Trash2, X, Image, Star, Upload, Loader2 } from "lucide-react";
 
 interface PortfolioItem {
   id: string;
@@ -24,6 +24,9 @@ const AdminPortfolio = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PortfolioItem | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     title: "",
     category: categories[0],
@@ -67,6 +70,7 @@ const AdminPortfolio = () => {
         image_url: item.image_url,
         featured: item.featured,
       });
+      setPreviewUrl(item.image_url);
     } else {
       setEditingItem(null);
       setFormData({
@@ -76,6 +80,7 @@ const AdminPortfolio = () => {
         image_url: "",
         featured: false,
       });
+      setPreviewUrl(null);
     }
     setIsModalOpen(true);
   };
@@ -83,6 +88,72 @@ const AdminPortfolio = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingItem(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Invalid file",
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please select an image under 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      // Generate unique filename
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+      // Upload to storage
+      const { error: uploadError } = await supabase.storage
+        .from("portfolio")
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from("portfolio")
+        .getPublicUrl(fileName);
+
+      setFormData({ ...formData, image_url: publicUrl });
+      setPreviewUrl(publicUrl);
+
+      toast({
+        title: "Uploaded",
+        description: "Image uploaded successfully",
+      });
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -91,7 +162,7 @@ const AdminPortfolio = () => {
     if (!formData.title || !formData.image_url) {
       toast({
         title: "Missing Fields",
-        description: "Please fill in all required fields",
+        description: "Please fill in all required fields and upload an image",
         variant: "destructive",
       });
       return;
@@ -308,15 +379,63 @@ const AdminPortfolio = () => {
                   </select>
                 </div>
 
+                {/* Image Upload */}
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Image URL *
+                    Image *
                   </label>
-                  <Input
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    placeholder="https://example.com/image.jpg"
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
                   />
+                  
+                  {previewUrl ? (
+                    <div className="relative rounded-lg overflow-hidden">
+                      <img
+                        src={previewUrl}
+                        alt="Preview"
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="absolute inset-0 bg-foreground/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={isUploading}
+                        >
+                          {isUploading ? (
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          ) : (
+                            <Upload className="h-4 w-4 mr-2" />
+                          )}
+                          Change Image
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                      className="w-full h-48 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 hover:border-gold hover:bg-gold/5 transition-colors"
+                    >
+                      {isUploading ? (
+                        <>
+                          <Loader2 className="h-8 w-8 text-gold animate-spin" />
+                          <span className="text-sm text-muted-foreground">Uploading...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="h-8 w-8 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">Click to upload image</span>
+                          <span className="text-xs text-muted-foreground">Max 5MB</span>
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
 
                 <div>
@@ -348,7 +467,7 @@ const AdminPortfolio = () => {
                   <Button variant="outline" type="button" onClick={closeModal} className="flex-1">
                     Cancel
                   </Button>
-                  <Button variant="gold" type="submit" className="flex-1">
+                  <Button variant="gold" type="submit" className="flex-1" disabled={isUploading}>
                     {editingItem ? "Update" : "Create"}
                   </Button>
                 </div>
