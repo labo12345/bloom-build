@@ -12,19 +12,19 @@ const contactInfo = [
   {
     icon: Phone,
     title: "Phone",
-    details: ["+1 (234) 567-890", "+1 (234) 567-891"],
-    action: "tel:+1234567890",
+    details: ["0791 996448"],
+    action: "tel:+254791996448",
   },
   {
     icon: Mail,
     title: "Email",
-    details: ["hello@beyondhouse.com", "support@beyondhouse.com"],
-    action: "mailto:hello@beyondhouse.com",
+    details: ["Beyondhouseint@gmail.com"],
+    action: "mailto:Beyondhouseint@gmail.com",
   },
   {
     icon: MapPin,
     title: "Address",
-    details: ["123 Design Avenue", "Interior District, City 10001"],
+    details: ["Nairobi, Kenya"],
     action: null,
   },
   {
@@ -70,7 +70,7 @@ const Contact = () => {
   };
 
   const openWhatsApp = () => {
-    window.open("https://wa.me/1234567890?text=Hello! I'm interested in your interior design services.", "_blank");
+    window.open("https://wa.me/254791996448?text=Hello! I'm interested in your interior design services.", "_blank");
   };
 
   return (
@@ -265,7 +265,7 @@ const Contact = () => {
 
               <div className="rounded-2xl overflow-hidden shadow-card h-[400px] lg:h-[500px]">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d387193.30591910525!2d-74.25986548248684!3d40.69714941932609!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2s!4v1635000000000!5m2!1sen!2s"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d255282.35853733498!2d36.68258167968749!3d-1.3028617999999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2s!4v1702300000000!5m2!1sen!2s"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
