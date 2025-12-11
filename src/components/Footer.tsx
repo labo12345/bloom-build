@@ -22,14 +22,8 @@ const Footer = () => {
               and design consultancy services.
             </p>
             <div className="flex gap-4 pt-2">
-              <a href="#" className="text-background/60 hover:text-gold transition-colors duration-200">
+              <a href="https://instagram.com/beyondhouseinteriors" target="_blank" rel="noopener noreferrer" className="text-background/60 hover:text-gold transition-colors duration-200">
                 <Instagram className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-background/60 hover:text-gold transition-colors duration-200">
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-background/60 hover:text-gold transition-colors duration-200">
-                <Linkedin className="h-5 w-5" />
               </a>
             </div>
           </div>
@@ -75,19 +69,19 @@ const Footer = () => {
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-gold flex-shrink-0 mt-0.5" />
                 <span className="text-background/80 text-sm">
-                  123 Design Avenue, Interior District, City 10001
+                  Nairobi, Kenya
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-gold flex-shrink-0" />
-                <a href="tel:+1234567890" className="text-background/80 hover:text-gold transition-colors text-sm">
-                  +1 (234) 567-890
+                <a href="tel:+254791996448" className="text-background/80 hover:text-gold transition-colors text-sm">
+                  0791 996448
                 </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-gold flex-shrink-0" />
-                <a href="mailto:hello@beyondhouse.com" className="text-background/80 hover:text-gold transition-colors text-sm">
-                  hello@beyondhouse.com
+                <a href="mailto:Beyondhouseint@gmail.com" className="text-background/80 hover:text-gold transition-colors text-sm">
+                  Beyondhouseint@gmail.com
                 </a>
               </li>
             </ul>
