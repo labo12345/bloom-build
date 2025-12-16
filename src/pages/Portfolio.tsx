@@ -1,65 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
 import FloralDivider from "@/components/FloralDivider";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
-import ceilingImg from "@/assets/service-ceiling.jpg";
-import cabinetryImg from "@/assets/service-cabinetry.jpg";
-import wallsImg from "@/assets/service-walls.jpg";
-import floorsImg from "@/assets/service-floors.jpg";
-import heroImg from "@/assets/hero-interior.jpg";
-
-const portfolioItems = [
-  {
-    id: 1,
-    title: "Modern Living Room",
-    category: "Living Spaces",
-    image: heroImg,
-    description: "A complete transformation featuring custom ceiling design with integrated lighting, premium flooring, and elegant wall treatments.",
-  },
-  {
-    id: 2,
-    title: "Luxury Kitchen",
-    category: "Kitchen",
-    image: cabinetryImg,
-    description: "Custom cabinetry with soft-close mechanisms, premium countertops, and a stunning coffered ceiling design.",
-  },
-  {
-    id: 3,
-    title: "Elegant Hallway",
-    category: "Entryways",
-    image: wallsImg,
-    description: "Classic wainscoting, decorative crown molding, and sophisticated wallpaper create a welcoming entrance.",
-  },
-  {
-    id: 4,
-    title: "Master Bedroom Suite",
-    category: "Bedrooms",
-    image: ceilingImg,
-    description: "Tray ceiling with ambient lighting, custom built-in wardrobes, and luxurious wall paneling.",
-  },
-  {
-    id: 5,
-    title: "Contemporary Office",
-    category: "Commercial",
-    image: floorsImg,
-    description: "Modern herringbone flooring, sleek built-in storage, and a clean minimalist aesthetic for productive workspaces.",
-  },
-  {
-    id: 6,
-    title: "Spa-Inspired Bathroom",
-    category: "Bathrooms",
-    image: wallsImg,
-    description: "Natural stone flooring, custom vanity cabinetry, and textured wall finishes create a relaxing retreat.",
-  },
-];
-
-const categories = ["All", "Living Spaces", "Kitchen", "Bedrooms", "Bathrooms", "Commercial", "Entryways"];
+interface PortfolioItem {
+  id: string;
+  title: string;
+  category: string;
+  image_url: string;
+  description: string | null;
+  featured: boolean | null;
+}
 
 const Portfolio = () => {
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [categories, setCategories] = useState<string[]>(["All"]);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedProject, setSelectedProject] = useState<typeof portfolioItems[0] | null>(null);
+  const [selectedProject, setSelectedProject] = useState<PortfolioItem | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPortfolio();
+  }, []);
+
+  const fetchPortfolio = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("portfolio_items")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      
+      if (data) {
+        setPortfolioItems(data);
+        // Extract unique categories
+        const uniqueCategories = ["All", ...new Set(data.map(item => item.category))];
+        setCategories(uniqueCategories);
+      }
+    } catch (error) {
+      console.error("Error fetching portfolio:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredItems = selectedCategory === "All" 
     ? portfolioItems 
@@ -118,31 +104,41 @@ const Portfolio = () => {
       {/* Gallery Grid */}
       <section className="py-12">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredItems.map((item, index) => (
-              <div
-                key={item.id}
-                className="group relative rounded-xl overflow-hidden shadow-card cursor-pointer animate-fade-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
-                onClick={() => setSelectedProject(item)}
-              >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-72 object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                  <span className="inline-block px-3 py-1 bg-gold text-accent-foreground text-xs font-medium rounded-full mb-2">
-                    {item.category}
-                  </span>
-                  <h3 className="font-display text-xl font-semibold text-background">
-                    {item.title}
-                  </h3>
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold mx-auto" />
+            </div>
+          ) : filteredItems.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No portfolio items found</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredItems.map((item, index) => (
+                <div
+                  key={item.id}
+                  className="group relative rounded-xl overflow-hidden shadow-card cursor-pointer animate-fade-up"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                  onClick={() => setSelectedProject(item)}
+                >
+                  <img
+                    src={item.image_url}
+                    alt={item.title}
+                    className="w-full h-72 object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <span className="inline-block px-3 py-1 bg-gold text-accent-foreground text-xs font-medium rounded-full mb-2">
+                      {item.category}
+                    </span>
+                    <h3 className="font-display text-xl font-semibold text-background">
+                      {item.title}
+                    </h3>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -158,7 +154,7 @@ const Portfolio = () => {
           >
             <div className="relative">
               <img
-                src={selectedProject.image}
+                src={selectedProject.image_url}
                 alt={selectedProject.title}
                 className="w-full h-64 md:h-80 object-cover"
               />
@@ -177,7 +173,7 @@ const Portfolio = () => {
                 {selectedProject.title}
               </h3>
               <p className="text-muted-foreground mb-6">
-                {selectedProject.description}
+                {selectedProject.description || "A stunning interior transformation by Beyond House."}
               </p>
               <Button variant="gold" size="lg" onClick={() => setSelectedProject(null)}>
                 Close

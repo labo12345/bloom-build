@@ -1,43 +1,38 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Award, Lightbulb, Clock, Sparkles, Star, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/Layout";
 import SectionHeader from "@/components/SectionHeader";
 import FloralDivider from "@/components/FloralDivider";
+import { supabase } from "@/integrations/supabase/client";
 
 import heroImage from "@/assets/hero-interior.jpg";
-import ceilingImg from "@/assets/service-ceiling.jpg";
-import cabinetryImg from "@/assets/service-cabinetry.jpg";
-import wallsImg from "@/assets/service-walls.jpg";
-import floorsImg from "@/assets/service-floors.jpg";
 
-const services = [
-  {
-    title: "Ceiling Design",
-    description: "Elegant coffered, tray, and custom ceiling designs that add architectural depth to your spaces.",
-    image: ceilingImg,
-    href: "/services#ceiling",
-  },
-  {
-    title: "Custom Cabinetry",
-    description: "Bespoke cabinetry solutions crafted to perfection for kitchens, wardrobes, and storage spaces.",
-    image: cabinetryImg,
-    href: "/services#cabinetry",
-  },
-  {
-    title: "Walls & Décor",
-    description: "Transform your walls with premium finishes, wallpapers, moldings, and artistic accents.",
-    image: wallsImg,
-    href: "/services#walls",
-  },
-  {
-    title: "Flooring Solutions",
-    description: "Premium tiles, hardwood, and innovative flooring options to complete your interior vision.",
-    image: floorsImg,
-    href: "/services#floors",
-  },
-];
+interface Testimonial {
+  id: string;
+  name: string;
+  role: string | null;
+  content: string;
+  rating: number | null;
+  featured: boolean | null;
+}
+
+interface PortfolioItem {
+  id: string;
+  title: string;
+  description: string | null;
+  image_url: string;
+  category: string;
+  featured: boolean | null;
+}
+
+interface Service {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+}
 
 const whyChooseUs = [
   {
@@ -62,29 +57,46 @@ const whyChooseUs = [
   },
 ];
 
-const testimonials = [
-  {
-    name: "Sarah Mitchell",
-    role: "Homeowner",
-    content: "Beyond House transformed our living room into a masterpiece. The ceiling design and custom cabinetry exceeded all our expectations. Highly recommended!",
-    rating: 5,
-  },
-  {
-    name: "James & Emily Richardson",
-    role: "New Home Owners",
-    content: "From the initial consultation to the final touches, the team was professional, creative, and attentive to our needs. Our home has never looked better.",
-    rating: 5,
-  },
-  {
-    name: "Michael Thompson",
-    role: "Business Owner",
-    content: "We hired Beyond House for our office renovation and the results were outstanding. The flooring and wall treatments created a perfect professional atmosphere.",
-    rating: 5,
-  },
-];
-
 const Index = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
+
+  useEffect(() => {
+    fetchTestimonials();
+    fetchPortfolio();
+    fetchServices();
+  }, []);
+
+  const fetchTestimonials = async () => {
+    const { data } = await supabase
+      .from("testimonials")
+      .select("*")
+      .eq("featured", true)
+      .order("created_at", { ascending: false })
+      .limit(5);
+    if (data) setTestimonials(data);
+  };
+
+  const fetchPortfolio = async () => {
+    const { data } = await supabase
+      .from("portfolio_items")
+      .select("*")
+      .eq("featured", true)
+      .order("created_at", { ascending: false })
+      .limit(3);
+    if (data) setPortfolioItems(data);
+  };
+
+  const fetchServices = async () => {
+    const { data } = await supabase
+      .from("services")
+      .select("id, title, description, image_url")
+      .order("display_order", { ascending: true })
+      .limit(4);
+    if (data) setServices(data);
+  };
 
   const nextTestimonial = () => {
     setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
@@ -161,7 +173,7 @@ const Index = () => {
                     <Award className="h-6 w-6 text-accent-foreground" />
                   </div>
                   <div>
-                    <p className="font-display font-semibold text-foreground">10+ Years</p>
+                    <p className="font-display font-semibold text-foreground">4+ Years</p>
                     <p className="text-sm text-muted-foreground">Experience</p>
                   </div>
                 </div>
@@ -185,14 +197,14 @@ const Index = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
             {services.map((service, index) => (
               <Link
-                key={service.title}
-                to={service.href}
+                key={service.id}
+                to="/services"
                 className="group bg-background rounded-xl overflow-hidden shadow-card hover:shadow-hover transition-all duration-300 animate-fade-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
-                    src={service.image}
+                    src={service.image_url}
                     alt={service.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
@@ -202,7 +214,7 @@ const Index = () => {
                   <h3 className="font-display text-xl font-semibold text-foreground mb-2 group-hover:text-gold transition-colors">
                     {service.title}
                   </h3>
-                  <p className="text-muted-foreground text-sm">{service.description}</p>
+                  <p className="text-muted-foreground text-sm line-clamp-2">{service.description}</p>
                 </div>
               </Link>
             ))}
@@ -262,15 +274,15 @@ const Index = () => {
           />
 
           <div className="grid md:grid-cols-3 gap-6 mt-12">
-            {[ceilingImg, cabinetryImg, wallsImg].map((img, index) => (
+            {portfolioItems.map((item, index) => (
               <div
-                key={index}
+                key={item.id}
                 className="relative group rounded-xl overflow-hidden shadow-card animate-fade-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <img
-                  src={img}
-                  alt={`Portfolio project ${index + 1}`}
+                  src={item.image_url}
+                  alt={item.title}
                   className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/40 transition-colors duration-300 flex items-center justify-center">
@@ -300,70 +312,72 @@ const Index = () => {
       <FloralDivider />
 
       {/* Testimonials */}
-      <section className="py-20">
-        <div className="container mx-auto px-4 lg:px-8">
-          <SectionHeader
-            badge="Testimonials"
-            title="What Our Clients Say"
-            subtitle="Don't just take our word for it - hear from our satisfied clients"
-          />
+      {testimonials.length > 0 && (
+        <section className="py-20">
+          <div className="container mx-auto px-4 lg:px-8">
+            <SectionHeader
+              badge="Testimonials"
+              title="What Our Clients Say"
+              subtitle="Don't just take our word for it - hear from our satisfied clients"
+            />
 
-          <div className="max-w-3xl mx-auto mt-12">
-            <div className="relative bg-gradient-blush rounded-2xl p-8 md:p-12">
-              {/* Quote marks */}
-              <div className="absolute top-4 left-4 text-gold/30 text-8xl font-display">"</div>
-              
-              <div className="relative z-10">
-                <div className="flex gap-1 mb-6 justify-center">
-                  {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-gold text-gold" />
-                  ))}
-                </div>
+            <div className="max-w-3xl mx-auto mt-12">
+              <div className="relative bg-gradient-blush rounded-2xl p-8 md:p-12">
+                {/* Quote marks */}
+                <div className="absolute top-4 left-4 text-gold/30 text-8xl font-display">"</div>
                 
-                <p className="text-lg md:text-xl text-foreground text-center leading-relaxed mb-8">
-                  {testimonials[currentTestimonial].content}
-                </p>
-                
-                <div className="text-center">
-                  <p className="font-display text-lg font-semibold text-foreground">
-                    {testimonials[currentTestimonial].name}
+                <div className="relative z-10">
+                  <div className="flex gap-1 mb-6 justify-center">
+                    {[...Array(testimonials[currentTestimonial]?.rating || 5)].map((_, i) => (
+                      <Star key={i} className="h-5 w-5 fill-gold text-gold" />
+                    ))}
+                  </div>
+                  
+                  <p className="text-lg md:text-xl text-foreground text-center leading-relaxed mb-8">
+                    {testimonials[currentTestimonial]?.content}
                   </p>
-                  <p className="text-muted-foreground text-sm">
-                    {testimonials[currentTestimonial].role}
-                  </p>
+                  
+                  <div className="text-center">
+                    <p className="font-display text-lg font-semibold text-foreground">
+                      {testimonials[currentTestimonial]?.name}
+                    </p>
+                    <p className="text-muted-foreground text-sm">
+                      {testimonials[currentTestimonial]?.role}
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Navigation */}
-              <div className="flex justify-center gap-4 mt-8">
-                <button
-                  onClick={prevTestimonial}
-                  className="p-2 rounded-full bg-background shadow-soft hover:shadow-card transition-shadow"
-                >
-                  <ChevronLeft className="h-5 w-5 text-foreground" />
-                </button>
-                <div className="flex items-center gap-2">
-                  {testimonials.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentTestimonial(index)}
-                      className={`w-2 h-2 rounded-full transition-colors ${
-                        index === currentTestimonial ? "bg-gold" : "bg-foreground/20"
-                      }`}
-                    />
-                  ))}
+                {/* Navigation */}
+                <div className="flex justify-center gap-4 mt-8">
+                  <button
+                    onClick={prevTestimonial}
+                    className="p-2 rounded-full bg-background shadow-soft hover:shadow-card transition-shadow"
+                  >
+                    <ChevronLeft className="h-5 w-5 text-foreground" />
+                  </button>
+                  <div className="flex items-center gap-2">
+                    {testimonials.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentTestimonial(index)}
+                        className={`w-2 h-2 rounded-full transition-colors ${
+                          index === currentTestimonial ? "bg-gold" : "bg-foreground/20"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    onClick={nextTestimonial}
+                    className="p-2 rounded-full bg-background shadow-soft hover:shadow-card transition-shadow"
+                  >
+                    <ChevronRight className="h-5 w-5 text-foreground" />
+                  </button>
                 </div>
-                <button
-                  onClick={nextTestimonial}
-                  className="p-2 rounded-full bg-background shadow-soft hover:shadow-card transition-shadow"
-                >
-                  <ChevronRight className="h-5 w-5 text-foreground" />
-                </button>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="py-20 bg-foreground relative overflow-hidden">

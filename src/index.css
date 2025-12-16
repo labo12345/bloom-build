@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lato:wght@300;400;500;600;700&display=swap');
+/* Times New Roman is a system font, no import needed */
 
 @layer base {
   :root {
@@ -58,8 +58,8 @@
     --shadow-hover: 0 12px 40px -8px hsl(43 74% 52% / 0.2);
 
     /* Fonts */
-    --font-display: 'Playfair Display', Georgia, serif;
-    --font-body: 'Lato', -apple-system, sans-serif;
+    --font-display: 'Times New Roman', Times, serif;
+    --font-body: 'Times New Roman', Times, serif;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
