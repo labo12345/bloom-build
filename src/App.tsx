@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import InstallPWA from "@/components/InstallPWA";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Services from "./pages/Services";
@@ -16,6 +17,7 @@ import AdminConsultations from "./pages/admin/Consultations";
 import AdminMessages from "./pages/admin/Messages";
 import AdminPortfolio from "./pages/admin/Portfolio";
 import AdminTestimonials from "./pages/admin/Testimonials";
+import AdminServices from "./pages/admin/Services";
 import AdminUsers from "./pages/admin/Users";
 import NotFound from "./pages/NotFound";
 
@@ -41,10 +43,12 @@ const App = () => (
             <Route path="/admin/messages" element={<AdminMessages />} />
             <Route path="/admin/portfolio" element={<AdminPortfolio />} />
             <Route path="/admin/testimonials" element={<AdminTestimonials />} />
+            <Route path="/admin/services" element={<AdminServices />} />
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        <InstallPWA />
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>

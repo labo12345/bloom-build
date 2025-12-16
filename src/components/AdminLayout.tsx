@@ -11,7 +11,8 @@ import {
   LogOut, 
   Menu,
   X,
-  Home
+  Home,
+  Wrench
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -26,6 +27,7 @@ const navItems = [
   { name: "Consultations", href: "/admin/consultations", icon: Calendar },
   { name: "Messages", href: "/admin/messages", icon: Mail },
   { name: "Portfolio", href: "/admin/portfolio", icon: Image },
+  { name: "Services", href: "/admin/services", icon: Wrench },
   { name: "Testimonials", href: "/admin/testimonials", icon: MessageSquare },
   { name: "Users", href: "/admin/users", icon: Users },
 ];
@@ -39,8 +41,10 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   useEffect(() => {
     if (!isLoading && !user) {
       navigate("/auth");
+    } else if (!isLoading && user && !isAdmin) {
+      navigate("/");
     }
-  }, [user, isLoading, navigate]);
+  }, [user, isAdmin, isLoading, navigate]);
 
   if (isLoading) {
     return (

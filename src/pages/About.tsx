@@ -49,7 +49,7 @@ const About = () => {
               About Us
             </span>
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground mb-6">
-              Crafting Beautiful Spaces Since 2014
+              Crafting Beautiful Spaces Since 2020
             </h1>
             <p className="text-lg text-muted-foreground">
               Beyond House Interior Construction & Consultancy has been transforming homes and 

@@ -98,13 +98,18 @@ const Footer = () => {
             <p className="text-background/60 text-sm">
               © {new Date().getFullYear()} Beyond House. All rights reserved.
             </p>
-            <div className="flex gap-6">
-              <a href="#" className="text-background/60 hover:text-gold transition-colors text-sm">
-                Privacy Policy
-              </a>
-              <a href="#" className="text-background/60 hover:text-gold transition-colors text-sm">
-                Terms of Service
-              </a>
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+              <div className="flex gap-6">
+                <a href="#" className="text-background/60 hover:text-gold transition-colors text-sm">
+                  Privacy Policy
+                </a>
+                <a href="#" className="text-background/60 hover:text-gold transition-colors text-sm">
+                  Terms of Service
+                </a>
+              </div>
+              <p className="text-background/40 text-xs">
+                Website developed by <a href="https://pandatech.co.ke" target="_blank" rel="noopener noreferrer" className="text-gold hover:text-gold-light transition-colors">Panda Tech</a>
+              </p>
             </div>
           </div>
         </div>
