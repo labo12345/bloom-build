@@ -12,9 +12,12 @@ import {
   Menu,
   X,
   Home,
-  Wrench
+  Wrench,
+  Images,
+  UserCircle,
+  Briefcase,
+  FileText
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -24,10 +27,14 @@ interface AdminLayoutProps {
 
 const navItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "Projects", href: "/admin/projects", icon: Briefcase },
+  { name: "Proposals", href: "/admin/proposals", icon: FileText },
   { name: "Consultations", href: "/admin/consultations", icon: Calendar },
   { name: "Messages", href: "/admin/messages", icon: Mail },
+  { name: "Gallery", href: "/admin/gallery", icon: Images },
   { name: "Portfolio", href: "/admin/portfolio", icon: Image },
   { name: "Services", href: "/admin/services", icon: Wrench },
+  { name: "Team", href: "/admin/team", icon: UserCircle },
   { name: "Testimonials", href: "/admin/testimonials", icon: MessageSquare },
   { name: "Users", href: "/admin/users", icon: Users },
 ];
@@ -57,7 +64,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     );
   }
 
-  if (!user) {
+  if (!user || !isAdmin) {
     return null;
   }
 
@@ -68,7 +75,6 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-cream">
-      {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div 
           className="fixed inset-0 bg-foreground/50 z-40 lg:hidden"
@@ -76,13 +82,11 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         />
       )}
 
-      {/* Sidebar */}
       <aside className={cn(
         "fixed top-0 left-0 z-50 h-full w-64 bg-foreground text-background transition-transform duration-300 lg:translate-x-0",
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="flex flex-col h-full">
-          {/* Logo */}
           <div className="p-6 border-b border-background/10">
             <div className="flex items-center justify-between">
               <div>
@@ -98,7 +102,6 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
             </div>
           </div>
 
-          {/* Navigation */}
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             {navItems.map((item) => {
               const isActive = location.pathname === item.href;
@@ -108,42 +111,39 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
+                    "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-sm",
                     isActive 
                       ? "bg-gold text-foreground" 
                       : "text-background/70 hover:bg-background/10 hover:text-background"
                   )}
                 >
-                  <item.icon className="h-5 w-5" />
+                  <item.icon className="h-4 w-4" />
                   {item.name}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Footer */}
           <div className="p-4 border-t border-background/10 space-y-2">
             <Link
               to="/"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg text-background/70 hover:bg-background/10 hover:text-background transition-colors"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-background/70 hover:bg-background/10 hover:text-background transition-colors text-sm"
             >
-              <Home className="h-5 w-5" />
+              <Home className="h-4 w-4" />
               Back to Website
             </Link>
             <button
               onClick={handleSignOut}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-background/70 hover:bg-background/10 hover:text-background transition-colors"
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-background/70 hover:bg-background/10 hover:text-background transition-colors text-sm"
             >
-              <LogOut className="h-5 w-5" />
+              <LogOut className="h-4 w-4" />
               Sign Out
             </button>
           </div>
         </div>
       </aside>
 
-      {/* Main content */}
       <div className="lg:ml-64">
-        {/* Top bar */}
         <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border px-4 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <button 
@@ -154,16 +154,9 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
             </button>
             
             <div className="flex items-center gap-4 ml-auto">
-              {!isAdmin && (
-                <span className="text-xs bg-peach text-foreground px-3 py-1 rounded-full">
-                  User Access
-                </span>
-              )}
-              {isAdmin && (
-                <span className="text-xs bg-gold text-accent-foreground px-3 py-1 rounded-full">
-                  Admin
-                </span>
-              )}
+              <span className="text-xs bg-gold text-accent-foreground px-3 py-1 rounded-full">
+                Admin
+              </span>
               <div className="text-right">
                 <p className="text-sm font-medium text-foreground">{user.email}</p>
               </div>
@@ -171,7 +164,6 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           </div>
         </header>
 
-        {/* Page content */}
         <main className="p-4 lg:p-8">
           {children}
         </main>
