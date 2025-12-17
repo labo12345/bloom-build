@@ -89,6 +89,42 @@ export type Database = {
         }
         Relationships: []
       }
+      gallery_items: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          media_type: string
+          media_url: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          media_type?: string
+          media_url: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          media_type?: string
+          media_url?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       portfolio_items: {
         Row: {
           category: string
@@ -152,6 +188,110 @@ export type Database = {
         }
         Relationships: []
       }
+      projects: {
+        Row: {
+          assigned_team_member_id: string | null
+          budget: number | null
+          client_email: string | null
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          description: string | null
+          end_date: string | null
+          id: string
+          notes: string | null
+          start_date: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_team_member_id?: string | null
+          budget?: number | null
+          client_email?: string | null
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          start_date?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_team_member_id?: string | null
+          budget?: number | null
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          start_date?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_assigned_team_member_id_fkey"
+            columns: ["assigned_team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposals: {
+        Row: {
+          client_email: string | null
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          description: string | null
+          estimated_budget: number | null
+          id: string
+          notes: string | null
+          status: string
+          title: string
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          client_email?: string | null
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          description?: string | null
+          estimated_budget?: number | null
+          id?: string
+          notes?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          description?: string | null
+          estimated_budget?: number | null
+          id?: string
+          notes?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           created_at: string
@@ -185,6 +325,51 @@ export type Database = {
           subtitle?: string | null
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          bio: string | null
+          created_at: string
+          display_order: number | null
+          email: string | null
+          full_name: string
+          id: string
+          is_leader: boolean | null
+          phone: string | null
+          photo_url: string | null
+          role: string
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          display_order?: number | null
+          email?: string | null
+          full_name: string
+          id?: string
+          is_leader?: boolean | null
+          phone?: string | null
+          photo_url?: string | null
+          role: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          display_order?: number | null
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_leader?: boolean | null
+          phone?: string | null
+          photo_url?: string | null
+          role?: string
+          updated_at?: string
+          video_url?: string | null
         }
         Relationships: []
       }
